@@ -36,6 +36,7 @@ class alphabeta
 
     alphabeta() ;
     alphabeta(int player_char) ;
+    void reset();
 
     int getCell( int cell, unsigned int board );
     void putCell( int player, int cell, unsigned int *board );
@@ -60,6 +61,13 @@ alphabeta::alphabeta(int player_char)
   moves = 0;
   this_player = player_char;
   other_player = (player_char % 2) + 1;
+}
+
+void alphabeta::reset()
+{
+  moves = 0;
+  boards_checked = 0;
+  computer_move = 0;
 }
 
 int alphabeta::checkPlayerWin( int player, unsigned int cur_board )
@@ -171,7 +179,7 @@ void alphabeta::getComputerMove(unsigned int *board )
 
   evaluateComputerMove( *board, 0, MIN_INFINITY-1, MAX_INFINITY+1 );
 
-  printf("move is %d (boards checked %d)\n", computer_move, boards_checked);
+//   printf("move is %d (boards checked %d)\n", computer_move, boards_checked);
 
   //   putCell( O_PLAYER, computer_move, board );
   putCell( this_player, computer_move, board );

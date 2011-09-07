@@ -94,47 +94,50 @@ int checkPlayerWin( int player, unsigned int cur_board )
 
 int main()
 {
-  unsigned int cur_board = 0;
-  int won = false;
 
 //   alphabeta player1(1),player2(2);
-  minimax player1(1), player2(2);
+    minimax player1(1), player2(2);
 
-  while (!won)
+  for (int i=0; i<5; i++)
   {
-    emitBoard(cur_board);
+    unsigned int cur_board = 0;
+    int won = false;
 
-    player1.getComputerMove (&cur_board);
-
-    won = checkPlayerWin(X_PLAYER, cur_board);
-    player1.moves++;
-    player2.moves++;
-
-    if ((!won) && ((player1.moves == MAX_CHILD_NODES) || (player2.moves == MAX_CHILD_NODES)))
+    while (!won)
     {
-      printf("draw\n");
-      break;
-    }
+      //emitBoard(cur_board);
 
-    if (!won) {
+      player1.getComputerMove (&cur_board);
 
-      /* Build the game tree */
-      player2.getComputerMove( &cur_board );
+      won = checkPlayerWin(X_PLAYER, cur_board);
+      player1.moves++;
+      player2.moves++;
 
-      won = checkPlayerWin( O_PLAYER, cur_board );
-
-      if (won) {
-	printf("\nYou lose!\n");
+      if ((!won) && ((player1.moves == MAX_CHILD_NODES) || (player2.moves == MAX_CHILD_NODES)))
+      {
+	printf("draw\n");
+	break;
       }
 
-    } else {
+      if (!won) {
 
-      printf("\nYou win!\n");
+	/* Build the game tree */
+	player2.getComputerMove( &cur_board );
 
-    }
+	won = checkPlayerWin( O_PLAYER, cur_board );
 
+	if (won)
+	  printf("\nPlayer 2 wins!\n");
+      }
+
+      else
+	printf("\nPlayer 1 wins!\n");
   }
 
-  emitBoard(cur_board);
-  return 0;
+  player1.reset();
+  player2.reset();
+//   emitBoard(cur_board);
+  }
+
+return 0;
 }

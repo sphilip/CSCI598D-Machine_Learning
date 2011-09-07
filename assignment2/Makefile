@@ -2,7 +2,7 @@ GCC = g++
 CFLAGS = -O0 -Wall
 LIBS =  -ggdb
 SOURCES = driver.c
-HEADERS = alphabeta.h
+HEADERS = alphabeta.h minimax.h
 OBJECTS = $(SOURCES:.c=.o)
 EXECUTABLE = tictactoe
 

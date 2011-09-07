@@ -1,7 +1,7 @@
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-//
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define MAX_CHILD_NODES		9
 
 #define EMPTY		0
@@ -16,15 +16,13 @@
 
 typedef struct {
   unsigned char test[3];
-} test_t;
+} test_t_m;
 
- const test_t tests[MAX_TESTS]={
+ const test_t_m mini_tests[MAX_TESTS]={
   {{ 8, 7, 6 }}, {{ 5, 4, 3 }},
   {{ 2, 1, 0 }}, {{ 8, 5, 2 }},
   {{ 7, 4, 1 }}, {{ 6, 3, 0 }},
   {{ 6, 4, 2 }}, {{ 8, 4, 0 }} };
-
-// #include "common.h"
 
 class minimax
 {
@@ -46,7 +44,7 @@ class minimax
     short evaluateHumanMove( unsigned int board, int depth );
     short evaluateComputerMove( unsigned int board, int depth );
     void getComputerMove( unsigned int *board );
-}
+};
 
 
 minimax::minimax()
@@ -69,7 +67,7 @@ int minimax::checkPlayerWin( int player, unsigned int cur_board )
 
   for (i = 0 ; i < MAX_TESTS ; i++)
   {
-    if ((getCell(tests[i].test[0], cur_board) == player) && (getCell(tests[i].test[1], cur_board) == player) && (getCell(tests[i].test[2], cur_board) == player))
+    if ((getCell(mini_tests[i].test[0], cur_board) == player) && (getCell(mini_tests[i].test[1], cur_board) == player) && (getCell(mini_tests[i].test[2], cur_board) == player))
       return 1;
   }
 

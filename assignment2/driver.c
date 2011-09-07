@@ -1,20 +1,36 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+//
+// #include "alphabeta.h"
+// #include "minimax.h"
+//
+// #define MAX_CHILD_NODES		9
+//
+// #define EMPTY		0
+// #define X_PLAYER	1
+// #define O_PLAYER	2
+//
+// #define MAX_INFINITY	1
+// #define DRAW		0
+// #define MIN_INFINITY	-1
 
 #include "alphabeta.h"
+#include "minimax.h"
 
-#define MAX_CHILD_NODES		9
-
-#define EMPTY		0
-#define X_PLAYER	1
-#define O_PLAYER	2
-
-#define MAX_INFINITY	1
-#define DRAW		0
-#define MIN_INFINITY	-1
 
 using namespace std;
+
+typedef struct {
+  unsigned char test[3];
+} test_t;
+
+const test_t tests[MAX_TESTS]={
+  {{ 8, 7, 6 }}, {{ 5, 4, 3 }},
+  {{ 2, 1, 0 }}, {{ 8, 5, 2 }},
+  {{ 7, 4, 1 }}, {{ 6, 3, 0 }},
+  {{ 6, 4, 2 }}, {{ 8, 4, 0 }} };
+
 
 int getCell( int cell, unsigned int board )
 {
@@ -81,7 +97,8 @@ int main()
   unsigned int cur_board = 0;
   int won = false;
 
-  alphabeta player1(1),player2(2);
+//   alphabeta player1(1),player2(2);
+  minimax player1(1), player2(2);
 
   while (!won)
   {

@@ -13,18 +13,17 @@
 #define MIN_INFINITY	-1
 
 #define MAX_TESTS	8
-//
+
+
 typedef struct {
   unsigned char test[3];
-} test_t;
+} test_t_a;
 
-const test_t tests[MAX_TESTS]={
+const test_t_a alpha_tests[MAX_TESTS]={
   {{ 8, 7, 6 }}, {{ 5, 4, 3 }},
   {{ 2, 1, 0 }}, {{ 8, 5, 2 }},
   {{ 7, 4, 1 }}, {{ 6, 3, 0 }},
   {{ 6, 4, 2 }}, {{ 8, 4, 0 }} };
-
-// #include "common.h"
 
 class alphabeta
 {
@@ -69,7 +68,7 @@ int alphabeta::checkPlayerWin( int player, unsigned int cur_board )
 
   for (i = 0 ; i < MAX_TESTS ; i++)
   {
-    if ((getCell(tests[i].test[0], cur_board) == player) && (getCell(tests[i].test[1], cur_board) == player) && (getCell(tests[i].test[2], cur_board) == player))
+    if ((getCell(alpha_tests[i].test[0], cur_board) == player) && (getCell(alpha_tests[i].test[1], cur_board) == player) && (getCell(alpha_tests[i].test[2], cur_board) == player))
       return 1;
   }
 

@@ -17,7 +17,7 @@
 
 #include "alphabeta.h"
 #include "minimax.h"
-
+#include "linear.h"
 
 using namespace std;
 
@@ -25,11 +25,19 @@ typedef struct {
   unsigned char test[3];
 } test_t;
 
-const test_t tests[MAX_TESTS]={
-  {{ 8, 7, 6 }}, {{ 5, 4, 3 }},
-  {{ 2, 1, 0 }}, {{ 8, 5, 2 }},
-  {{ 7, 4, 1 }}, {{ 6, 3, 0 }},
-  {{ 6, 4, 2 }}, {{ 8, 4, 0 }} };
+const test_t tests[MAX_TESTS]=
+{
+  {{ 8, 7, 6 }}, 
+  {{ 5, 4, 3 }},
+  {{ 2, 1, 0 }}, 
+  
+  {{ 8, 5, 2 }},
+  {{ 7, 4, 1 }}, 
+  {{ 6, 3, 0 }},
+  
+  {{ 6, 4, 2 }}, 
+  {{ 8, 4, 0 }} 
+};
 
 
 int getCell( int cell, unsigned int board )
@@ -39,8 +47,7 @@ int getCell( int cell, unsigned int board )
 
 void putCell( int player, int cell, unsigned int *board )
 {
-  cell =
-  *board |= (player << (cell*2));
+  cell = *board |= (player << (cell*2));
   return;
 }
 
@@ -83,9 +90,8 @@ int checkPlayerWin( int player, unsigned int cur_board )
 
   for (i = 0 ; i < MAX_TESTS ; i++) {
 
-    if ((getCell(tests[i].test[0], cur_board) == player) &&
-      (getCell(tests[i].test[1], cur_board) == player) &&
-      (getCell(tests[i].test[2], cur_board) == player)) return 1;
+    if ((getCell(tests[i].test[0], cur_board) == player) && (getCell(tests[i].test[1], cur_board) == player) && (getCell(tests[i].test[2], cur_board) == player)) 
+      return 1;
 
   }
 
@@ -95,27 +101,32 @@ int checkPlayerWin( int player, unsigned int cur_board )
 int main()
 {
 
-//   alphabeta player1(1),player2(2);
-    minimax player1(1), player2(2);
+//   alphabeta player1(1,20,8,56,35),player2(2,16,34,29,2);
+//   minimax player1(1), player2(2);
+linear player1(1,8,6,10,7),player2(2,1,1,1,1);
+// alphabeta player1(1);
+// minimax player1(1);
+// linear player2(2,1,1,1,1);
 
-  for (int i=0; i<5; i++)
+int num_games = 1000;
+  for (int i=0; i< num_games; i++)
   {
     unsigned int cur_board = 0;
     int won = false;
 
     while (!won)
     {
-      //emitBoard(cur_board);
+//       emitBoard(cur_board);
 
       player1.getComputerMove (&cur_board);
 
       won = checkPlayerWin(X_PLAYER, cur_board);
       player1.moves++;
-      player2.moves++;
+//       player2.moves++;
 
       if ((!won) && ((player1.moves == MAX_CHILD_NODES) || (player2.moves == MAX_CHILD_NODES)))
       {
-	printf("draw\n");
+	printf("0\n");
 	break;
       }
 
@@ -123,21 +134,25 @@ int main()
 
 	/* Build the game tree */
 	player2.getComputerMove( &cur_board );
-
+	
+// 	printf("player 1\t%3.2f\t%3.2f\t%3.2f\t%3.2f\n",player1.w1, player1.w2, player1.w3, player1.w4);
+// 	printf("player 2\t%3.2f\t%3.2f\t%3.2f\t%3.2f\n",player2.w1, player2.w2, player2.w3, player2.w4);
 	won = checkPlayerWin( O_PLAYER, cur_board );
 
 	if (won)
-	  printf("\nPlayer 2 wins!\n");
-      }
-
-      else
-	printf("\nPlayer 1 wins!\n");
+	  printf("2\n");
+      } 
+      
+      else printf("1\n");
+    }
+    
+    player1.reset();
+    player2.reset();
+//     emitBoard(cur_board);
+    
+    
   }
-
-  player1.reset();
-  player2.reset();
-//   emitBoard(cur_board);
-  }
-
-return 0;
+  
+  printf("%d",num_games);
+  return 0;
 }

@@ -93,27 +93,27 @@ short minimax::evaluateHumanMove( unsigned int board, int depth )
   boards_checked++;
 
   /* The computer (max) just made a move, so we evaluate that move here */
-  if (checkPlayerWin(O_PLAYER, board))
+//   if (checkPlayerWin(O_PLAYER, board))
+//     return MAX_INFINITY;
+if (checkPlayerWin(this_player, board))
     return MAX_INFINITY;
 
-  for (i = 0 ; i < MAX_CHILD_NODES ; i++) {
-
-    if (getCell(i, board) == EMPTY) {
-
+  for (i = 0 ; i < MAX_CHILD_NODES ; i++) 
+  {
+    if (getCell(i, board) == EMPTY) 
+    {
       new_board = board;
+
       //       putCell( X_PLAYER, i, &new_board );
       putCell( other_player, i, &new_board );
 
       value = evaluateComputerMove( new_board, depth+1 );
 
-      if (value < min) {
+      if (value < min)
 	min = value;
-      }
-
     }
-
   }
-
+  
   /* No move is possible -- draw */
   if (min == MAX_INFINITY+1) {
     return DRAW;
@@ -137,18 +137,21 @@ short minimax::evaluateComputerMove( unsigned int board, int depth )
 
   for (i = 0 ; i < MAX_CHILD_NODES ; i++) {
 
-    if (getCell(i, board) == EMPTY) {
-
+    if (getCell(i, board) == EMPTY) 
+    {
       new_board = board;
+
       //       putCell( O_PLAYER, i, &new_board );
       putCell( this_player, i, &new_board );
+      
       value = evaluateHumanMove( new_board, depth+1 );
-
-      if (value > max) {
+      
+      if (value > max) 
+      {
 	max = value;
-	if (depth == 0) computer_move = i;
+	if (depth == 0) 
+	  computer_move = i;
       }
-
     }
 
   }
@@ -168,8 +171,10 @@ void minimax::getComputerMove( unsigned int *board )
   boards_checked = 0;
 
   evaluateComputerMove( *board, 0 );
+  
+//   printf("\t%d\n", rating);
 
-//   printf("move is %d (%d boards checked)\n", computer_move, boards_checked);
+  printf("move is %d (%d boards checked)\n", computer_move, boards_checked);
 
   //   putCell( O_PLAYER, computer_move, board );
   putCell( this_player, computer_move, board );

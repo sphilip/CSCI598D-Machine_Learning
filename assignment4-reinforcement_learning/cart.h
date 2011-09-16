@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _CART_H_
+#define _CART_H_
+
 #include "pole.h"
 #include "Vector.h"
 
@@ -6,7 +8,7 @@ class cart
 {
   public:
     double current_position;
-    pole p;
+    pole p();
     Vector velocity;
     Vector acceleration;
 
@@ -19,27 +21,5 @@ class cart
     bool touchdown(pole &p);
 };
 
-cart::cart()
-{
-  current_position = 0;
-  velocity(0,0);
-  acceleration(0,0);
-  
-  cart_dim(10,10);
-  pole_location(5,5);
-}
+#endif
 
-void cart::move()
-{
-}
-
-void cart::balance(pole p)
-{
-}
-
-bool cart::touchdown(pole &p)
-{ 
-  if (p.angle >= 90 || p.angle <= -90)
-    return true;
-  else return false; 
-}

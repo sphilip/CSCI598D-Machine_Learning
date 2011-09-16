@@ -2,22 +2,41 @@
 
 cell::cell()
 {
-  out = new int[1];
+  outbound = new int[1];
   num_transitions = 1;
 }
 
 cell::cell(int num)
 {
-  out = new int[num];
+  outbound = new int[num];
   num_transitions = num;
+  links_created = 0;
 }
 
-void cell::create_link(int from, int to)
+void cell::create_link(cell& to)
 {
-  if (from > num_transitions)
-    std::cout << "Can't make link from cells " << from << "to " << to << std::endl;
-  else if (to > num_transitions)
-    std::cout << "Can't make link from cells " << from << "to " << to << std::endl;
-  else if (from == out.current_cell)
+  if (links_created < num_transitions)
+  {
+    outbound[links_created]->next = to;
+    outbound[links_created].val = 0;
     
+    links_created++;
+  }
+  
+  else printf("this cell is full\n");
+  
+}
+
+int cell::get_transition_value_from(int id)
+{
+  for (int i=0; i<links_created; i++)
+  {
+    if (outbound[i]->next.cell_id == id)
+    {
+      return outbound[i].val;
+    }
+  }
+  
+  printf("couldn't find cell with id %d",id);
+  return -1;
 }

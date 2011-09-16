@@ -3,8 +3,8 @@
 /** Default construct, initialize to 0 **/
 Vector::Vector()
 {
-  x = 0;
-  y = 0;
+  x = 0.0;
+  y = 0.0;
 }
 
 /** Construct w/  parameter list **/
@@ -41,11 +41,11 @@ Vector Vector::operator+ (const Vector& b)
 }
 
 /** Overloaded operator to scalar mult **/
- Vector Vector::operator* (const double& x)
+ Vector Vector::operator* (const double& d)
 {
   Vector c;
-  c.x = (this->x * x);
-  c.y = (this->y * x);
+  c.x = (this->x * d);
+  c.y = (this->y * d);
 
   return c;
 }

@@ -1,8 +1,8 @@
 GCC = g++
 CFLAGS = -O0 -Wall
 LIBS =  -ggdb
-SOURCES = driver.c Vector.c pole.c cart.c
-HEADERS = Vector.h pole.h cart.h
+SOURCES = driver.c Vector.c pole.c cart.c cell.c
+HEADERS = Vector.h pole.h cart.h cell.h
 OBJECTS = $(SOURCES:.c=.o)
 EXECUTABLE = pole_balance
 

@@ -4,6 +4,8 @@
 #include "pole.h"
 #include "Vector.h"
 
+class pole;
+
 class cart
 {
   public:

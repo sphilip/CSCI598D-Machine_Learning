@@ -13,7 +13,7 @@ class Vector
     Vector operator+ (const Vector& b) ;
     Vector operator- ( Vector& b) ;
     Vector operator- () ;
-    Vector operator* (const double& x) ;
+    Vector operator* (const double& d) ;
     Vector operator= (const Vector& b);
     double magnitude ();
     Vector normalize ();

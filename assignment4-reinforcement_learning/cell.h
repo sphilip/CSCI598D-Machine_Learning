@@ -17,12 +17,14 @@ class cell
     int num_transitions;
     int cell_id;
     int links_created;
+    int max_transition_value;
 
     cell();
-    cell(int size);
+    cell(int, int);
 
     void create_link(cell&);
     int get_transition_value_from(int id);
+    void get_max_transition();
 };
 
 #endif

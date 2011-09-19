@@ -18,7 +18,7 @@ class cart
     Vector cart_dim;
 
     cart();
-    void move();
+    void nudge();
     void balance(pole &p);
     bool touchdown(pole &p);
 };

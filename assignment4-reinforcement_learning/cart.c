@@ -1,31 +1,32 @@
+#include "stdio.h"
 #include "cart.h"
 #include "pole.h"
 
 cart::cart()
 {
   current_position = 0;
-  velocity(0.0, 0.0);
-  acceleration(0.0, 0.0);
-  
-  cart_dim(10.0 ,10.0);
-  pole_location(5.0, 5.0);
+  velocity = Vector(0.0, 0.0);
+  acceleration = Vector(0.0, 0.0);
+
+  cart_dim = Vector(10.0 ,10.0);
+  pole_location = Vector(5.0, 5.0);
 }
 
-void cart::move()
+void cart::nudge()
 {
-  std::cout << "move";
+  printf("move\n");
   return;
 }
 
 void cart::balance(pole &p)
 {
-  std::cout << "blah\n";
+  printf("blah\n");
   return;
 }
 
 bool cart::touchdown(pole &p)
-{ 
+{
   if (p.angle >= 90 || p.angle <= -90)
     return true;
-  else return false; 
+  else return false;
 }

@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Vector.h"
 
 /** Default construct, initialize to 0 **/

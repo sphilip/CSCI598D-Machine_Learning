@@ -10,6 +10,7 @@ pole::pole()
 
   mass = 10.0;
   height = 10.0;
+  angle = 0;
 }
 
 void pole::nudge(Vector f, double t)

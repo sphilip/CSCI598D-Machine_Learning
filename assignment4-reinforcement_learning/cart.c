@@ -18,15 +18,18 @@ void cart::nudge()
   return;
 }
 
-void cart::balance(pole &p)
+void cart::balance()
 {
-  printf("blah\n");
-  return;
+ if (!touchdown())
+ {
+   
+ }
+ 
 }
 
-bool cart::touchdown(pole &p)
+bool cart::touchdown()
 {
-  if (p.angle >= 90 || p.angle <= -90)
+  if (p.angle >= 10 || p.angle <= -10)
     return true;
   else return false;
 }

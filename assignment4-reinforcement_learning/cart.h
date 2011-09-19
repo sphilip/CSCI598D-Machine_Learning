@@ -9,8 +9,8 @@ class pole;
 class cart
 {
   public:
-    double current_position;
-    pole p();
+    int current_position;
+    pole p;
     Vector velocity;
     Vector acceleration;
 
@@ -19,8 +19,8 @@ class cart
 
     cart();
     void nudge();
-    void balance(pole &p);
-    bool touchdown(pole &p);
+    void balance();
+    bool touchdown();
 };
 
 #endif

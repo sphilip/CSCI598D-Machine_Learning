@@ -20,12 +20,12 @@ class pole
 
 
     //             0 deg
-    //               ||
+    //  -10          ||      +10
     // -90 deg <==   || ==> 90 deg
     //             -------
     //             |     |
 
-    double angle;
+    int angle;
 
     pole();
     void nudge(Vector f, double t);

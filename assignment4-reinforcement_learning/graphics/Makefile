@@ -1,19 +1,19 @@
-GCC = g++
-CFLAGS = -O0 -Wall
-LIBS =  -ggdb -L/usr/X11R6/lib -lGLU -lGL -lglut 
-SOURCES = g_rl.cpp
-HEADERS = 
-OBJECTS = $(SOURCES:.cpp=.o)
-EXECUTABLE = pole_balance
+CC = g++
+CFLAGS = -Wall
+PROG = pole_balancing
 
-all: $(SOURCES) $(EXECUTABLE)
+SRCS = g_rl.cpp
 
-$(EXECUTABLE): $(OBJECTS)
-	$(GCC) $(CFLAGS) $(OBJECTS) $(HEADERS) -o $@
-        
+ifeq ($(shell uname),Darwin)
+	LIBS = -framework OpenGL -framework GLUT
+else
+	LIBS = -lglut -lGL -lGLU
+endif
 
-.cpp.o:
-	$(GCC) $(CFLAGS) -c $< -o $@ $(LIBS)
+all: $(PROG)
 
-clean :
-	rm *.o *~ pole_balance
+$(PROG):	$(SRCS)
+	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
+
+clean:
+	rm -f $(PROG)

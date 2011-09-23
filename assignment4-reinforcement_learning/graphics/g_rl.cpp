@@ -2,54 +2,92 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-
+#include <cmath>
 using namespace std;
 
+int screenHeight, screenWidth;
+int fieldHeight,fieldWidth;
+
+void setup_scene()
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  
+  glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
+  glLoadIdentity(); //Reset the drawing perspective
+
+  /* 
+  pretending that max height from origin = 100
+  z-axis from viewer = 100
+  
+  	       /  |  1/2 the scene
+      viewer  /_)_|  angle = tan^-1()
+  */
+  double fovy = atan((0.5*screenHeight)/100)*180/3.14;
+  double aspect = 70/100;
+  gluPerspective(fovy, aspect,-1,1);
+}
+
+void drawCart()
+{
+  glBegin(GL_POLYGON);
+  glEnd();
+}
 
 void draw()
 {
-  glBegin(GL_TRIANGLE_STRIP);
-  glVertex3i(0,0,0);
-  glVertex3i(10,0,0);
-  glVertex3i(5,5,0);
+  fieldWidth = 100;
+  fieldHeight = 10;
+  //Clear information from last draw
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+  glBegin(GL_LINE_STRIP);
+  glPushMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+ 
+  glTranslated(0,-20,0);
+  glVertex3i(-(fieldWidth/2),fieldHeight,0);
+  glVertex3i(-(fieldWidth/2)+10,fieldHeight,0);
+  glVertex3i(-(fieldWidth/2)+10,0,0);
+  glVertex3i((fieldWidth/2)-10,0,0);
+  glVertex3i((fieldWidth/2)-10,fieldHeight,0);
+  glVertex3i((fieldWidth/2),fieldHeight,0);
+ 
+  glPopMatrix();
+  
   glEnd();
-  glutPostRedisplay();
+  glutSwapBuffers();
 }
 
 int main(int argc, char *argv[])
 {
-  GLint wid;
   glutInit(&argc,argv);
 
-  /* size and placement hints to the window system */
-  glutInitWindowSize(800, 800);
-  glutInitWindowPosition(10,10);
-
-  /* double buffered, RGB color mode */
+ /* double buffered, RGB color mode */
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-  wid =  glutCreateWindow("Pole-Balancing Problem");  
-  /* back-face culling on */
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
-
-  /* automatically scale normals to unit length after transformation */
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_NORMALIZE);
-  glPointSize(4);
-  glEnable(GL_POINT_SMOOTH);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  screenHeight = 800;
+  screenWidth = 800;
+ 
+ /* size and placement hints to the window system */
+  glutInitWindowSize(screenHeight, screenWidth);
+  glutCreateWindow("Pole-Balancing Problem");  
   
+  /* automatically scale normals to unit length after transformation */
+  /* back-face culling on */
+  //glEnable(GL_CULL_FACE);
+  //glCullFace(GL_BACK);
+
   /* clear to BLACK */
   glClearColor(0.0,0.0,0.0, 1.0);
 
-  /* Enable depth test  */
+  /* Enable depth test  
+  Makes 3D drawing work when something is in front of something else */
   glEnable(GL_DEPTH_TEST);
 
-  glutSetWindow(wid);
-  
-  draw();
+  setup_scene();
+  glutDisplayFunc(draw);
   glutMainLoop();
   
   return 0;

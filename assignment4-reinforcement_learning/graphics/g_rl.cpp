@@ -15,17 +15,27 @@ void setup_scene()
   
   glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
   glLoadIdentity(); //Reset the drawing perspective
-
-  /* 
-  pretending that max height from origin = 100
-  z-axis from viewer = 100
   
+  glPushMatrix();
+  /* 
+  max height from origin = 20
+  camera at = <0,0,-100>
+  
+                 /| <0, 20, 0>
+                / |
   	       /  |  1/2 the scene
-      viewer  /_)_|  angle = tan^-1()
+      camera  /___|  angle = tan^-1(height/camera)
+      <0,0,-100>
   */
-  double fovy = atan((0.5*screenHeight)/100)*180/3.14;
-  double aspect = 70/100;
-  gluPerspective(fovy, aspect,-1,1);
+  double fovy = atan(20/100)*180/M_PI;
+  double aspect = 100/30;
+
+  
+//   gluPerspective(fovy, aspect,1,1);
+
+//   glViewport(0,0,100,40);
+  gluOrtho2D(-50, 50, -20, 20);
+  glPushMatrix();
 }
 
 void drawCart()
@@ -36,27 +46,58 @@ void drawCart()
 
 void draw()
 {
-  fieldWidth = 100;
-  fieldHeight = 10;
+  glMatrixMode(GL_MODELVIEW);
+  
   //Clear information from last draw
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
+  fieldWidth = 100;
+  fieldHeight = 10;
+    
+  /*
+  -------              __10__                 ------- 
+        |              |  |  |                |
+        |              |__|__|                |
+        |______________O__|__O________________|
+  -50   -40               0                  40    50
+  */
+  /*
   glBegin(GL_LINE_STRIP);
   glPushMatrix();
-  glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
- 
-  glTranslated(0,-20,0);
-  glVertex3i(-(fieldWidth/2),fieldHeight,0);
-  glVertex3i(-(fieldWidth/2)+10,fieldHeight,0);
-  glVertex3i(-(fieldWidth/2)+10,0,0);
-  glVertex3i((fieldWidth/2)-10,0,0);
-  glVertex3i((fieldWidth/2)-10,fieldHeight,0);
-  glVertex3i((fieldWidth/2),fieldHeight,0);
- 
-  glPopMatrix();
+  glVertex3d(-50,10,0);
+  glVertex3d(-40,10,0);
+  glVertex3d(-40,0,0);
   
+  glVertex3d(40,0,0);
+  glVertex3d(40,10,0);
+  glVertex3d(50,10,0);
+  glPopMatrix();
+  glEnd();*/
+  
+  GLdouble env[16];
+  glGetDoublev(GL_PROJECTION_MATRIX, env);
+  cout << env[0] << "\t" << env[1] << "\t" << env[2] << "\t" << env[3] << endl;
+  cout << env[4] << "\t" << env[5] << "\t" << env[6] << "\t" << env[7] << endl;
+  cout << env[8] << "\t" << env[9] << "\t" << env[10] << "\t" << env[11] << endl;
+  cout << env[12] << "\t" << env[13] << "\t" << env[14] << "\t" << env[15] << endl;
+
+  glBegin(GL_LINES);
+  // X-AXIS
+  glPushMatrix();
+  glLoadIdentity();
+  glColor3f(1.0f,0,0);
+  glVertex3d(0,0,0);
+  glVertex3d(1,0,0);
+  
+  // Y-AXIS
+  glColor3f(0,1.0f,0);
+  glVertex3d(0,0,0);
+  glVertex3d(0,1,0);
+  
+  glPopMatrix();
   glEnd();
+  
   glutSwapBuffers();
 }
 
@@ -71,7 +112,7 @@ int main(int argc, char *argv[])
   screenWidth = 800;
  
  /* size and placement hints to the window system */
-  glutInitWindowSize(screenHeight, screenWidth);
+  glutInitWindowSize(screenWidth,screenHeight);
   glutCreateWindow("Pole-Balancing Problem");  
   
   /* automatically scale normals to unit length after transformation */
@@ -84,7 +125,7 @@ int main(int argc, char *argv[])
 
   /* Enable depth test  
   Makes 3D drawing work when something is in front of something else */
-  glEnable(GL_DEPTH_TEST);
+//   glEnable(GL_DEPTH_TEST);
 
   setup_scene();
   glutDisplayFunc(draw);

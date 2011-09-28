@@ -2,18 +2,14 @@ CC = g++
 CFLAGS = -Wall
 PROG = pole_balancing
 
-SRCS = g_rl.cpp
-
-ifeq ($(shell uname),Darwin)
-	LIBS = -framework OpenGL -framework GLUT
-else
-	LIBS = -lglut -lGL -lGLU
-endif
+SRCS = g_rl.cpp pole.c Vector.c cart.c
+HDRS = pole.h Vector.h cart.h
+LIBS = -lglut -lGL -lGLU
 
 all: $(PROG)
 
 $(PROG):	$(SRCS)
-	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(HDRS) $(LIBS)
 
 clean:
-	rm -f $(PROG)
+	rm -f $(PROG) *~

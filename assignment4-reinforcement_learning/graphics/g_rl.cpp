@@ -1,14 +1,20 @@
 #include <iostream>
+#include <cstdlib>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <cmath>
+#include <ctime>
+
+#include "cart.h"
+
 using namespace std;
 
 int screenHeight, screenWidth;
 int fieldHeight,fieldWidth;
+pole* p;
 
-void setup_scene()
+void setup_graphical_scene()
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -39,8 +45,12 @@ void setup_scene()
   glPushMatrix();
 }
 
+void setup_actual_scene()
+{
+  p = new pole();
+}
 
-void drawWheel(double cx, double cy, double r)
+void drawCircle(double cx, double cy, double r)
 {
   int num_segments = 10;
   double theta = 2 * M_PI / double(num_segments);
@@ -84,10 +94,10 @@ void drawCart()
 
   // draw body
   glBegin(GL_LINE_LOOP);
-  glVertex3d(-8.0,10.0,0.0);
-  glVertex3d(-8.0,2.0,0.0);
-  glVertex3d(8.0,2.0,0.0);
-  glVertex3d(8.0,10.0,0.0);
+  glVertex2d(-8.0,10.0);
+  glVertex2d(-8.0,2.0);
+  glVertex2d(8.0,2.0);
+  glVertex2d(8.0,10.0);
   glEnd();
 
   // draw wheels
@@ -97,11 +107,11 @@ void drawCart()
   // left wheel
   x = -5.0;
   y = 2.0;
-  drawWheel(x,y,radius);
+  drawCircle(x,y,radius);
 
   // right wheel
   x = 5.0;
-  drawWheel(x,y,radius);
+  drawCircle(x,y,radius);
 
   glPopMatrix();
   glutSwapBuffers();
@@ -118,23 +128,23 @@ void drawField()
   fieldHeight = 10;
 
   /*
-  -------              __10__                 -------
-        |              |  |  |                |
-        |              |__|__|                |
-        |______________O__|__O________________|
+  -------              _______ 10                 -------
+        |              |     |                |
+        |              |_____|                |
+        |______________O__ __O________________|
   -50   -40               0                  40    50
   */
 
   glBegin(GL_LINE_STRIP);
   glPushMatrix();
   glLoadIdentity();
-  glVertex3d(-50,10,0);
-  glVertex3d(-40,10,0);
-  glVertex3d(-40,0,0);
-
-  glVertex3d(40,0,0);
-  glVertex3d(40,10,0);
-  glVertex3d(50,10,0);
+  glVertex2d(-50.0,10.0);
+  glVertex2d(-40.0,10.0);
+  glVertex2d(-40.0,0.0);
+  
+  glVertex2d(40.0,0.0);
+  glVertex2d(40.0,10.0);
+  glVertex2d(50.0,10.0);
   glPopMatrix();
   glEnd();
 
@@ -182,8 +192,9 @@ void drawPole()
   glEnd();
 
   // draw hinge
-  drawWheel(0.0,9.0,0.25);
+  drawCircle(p->pivot.x,p->pivot.y,p->pivot_radius);
 }
+
 void draw()
 {
   drawField();
@@ -192,6 +203,41 @@ void draw()
 
   glutSwapBuffers();
 }
+
+void handleKey(unsigned char key, int x, int y)
+{
+  switch (key)
+  {
+    case 27:
+      exit(0);
+      break;
+  }
+}
+
+void handleSpecialKey(int key, int x, int y)
+{
+  double current_time = clock() * 1/CLOCKS_PER_SEC;
+  switch (key)
+  {
+    case GLUT_KEY_LEFT:
+      p->a.x += cos(p->angle)*-10.0;
+      p->a.y += sin(p->angle)*-10.0;
+      p->nudge(p->a,current_time);
+      break;
+    
+    case GLUT_KEY_RIGHT:
+      p->a.x += cos(p->angle)*10.0;
+      p->a.y += sin(p->angle)*10.0;
+      p->nudge(p->a,current_time);
+      break;
+    
+    default:
+      p->a.x = 0.0;
+      p->a.y = 0.0;
+      break;
+  }
+}
+
 int main(int argc, char *argv[])
 {
   glutInit(&argc,argv);
@@ -206,21 +252,20 @@ int main(int argc, char *argv[])
   glutInitWindowSize(screenWidth,screenHeight);
   glutCreateWindow("Pole-Balancing Problem");
 
-  /* automatically scale normals to unit length after transformation */
-  /* back-face culling on */
-  //glEnable(GL_CULL_FACE);
-  //glCullFace(GL_BACK);
 
   /* clear to BLACK */
-  glClearColor(0.0,0.0,0.0, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
 
-  /* Enable depth test
-  Makes 3D drawing work when something is in front of something else */
-  //   glEnable(GL_DEPTH_TEST);
+  // Disable depth test - only want 2D 
   glDisable(GL_DEPTH_TEST);
 
-  setup_scene();
+  setup_graphical_scene();
+  setup_actual_scene();
+  
   glutDisplayFunc(draw);
+  glutKeyboardFunc(handleKey);
+  glutSpecialFunc(handleSpecialKey);
+  
   glutMainLoop();
 
   return 0;

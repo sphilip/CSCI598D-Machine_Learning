@@ -7,10 +7,13 @@
 
 using namespace std;
 
+// global variables
 int **alphabet;
 int *letters;
+int image_size;
 
-void read_input(const char* name)
+
+void read_input(const char* name, int index) // name of file & index in alphabet
 {
   ifstream infile(name);
   if (!infile)
@@ -22,12 +25,31 @@ void read_input(const char* name)
   char code[2];
   int height;
   int width;
-  int pixel;
+  int pixel1,pixel2,pixel3;
 
-  infile >> code;
-  infile >> width;
-  infile >> height;
-  cout << width << endl << height;
+  infile >> code >> width >> height;
+  image_size = width*height;
+
+  alphabet[index] = new int[width*height];
+
+  int i(0);
+  while (!infile.eof())
+  {
+    pixel1 = -1;
+    pixel2 = -1;
+    pixel3 = -1;
+    infile >> pixel1 >> pixel2 >> pixel3;
+    
+    // scale pixel values b/w 0,1
+    if (pixel1 == 255)
+      pixel1 = 0;  // if white
+    
+    else pixel1 = 1; // if black
+      
+    alphabet[index][i] = pixel1;
+    i++;
+  }
+  
   infile.close();
 }
 
@@ -39,6 +61,21 @@ bool valid_file(const char* name)
   else return false;
 }
 
+void test_alphabet()
+{
+  for (int i=0; i<26; i++)
+  {
+    for (int j=0; j<image_size; j++)
+    {
+      if (j%14 == 0)
+        cout << endl << alphabet[i][j] << " ";
+      else
+        cout << alphabet[i][j] << " ";
+    }
+    
+    cout << "\n\n";
+  }
+}
 int main()
 {
   string filename;
@@ -64,7 +101,9 @@ int main()
     sprintf(&letter,"%c",i);
     filename = "./letters/" + string (1,letter) + ".ppm";
 
-    read_input(filename.c_str());
+    read_input(filename.c_str(),(i-97));
   }
+  
+  test_alphabet();
   return 0;
 }

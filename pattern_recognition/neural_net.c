@@ -12,6 +12,12 @@ int **alphabet;
 int *letters;
 int image_size;
 
+struct perceptron
+{
+  double weight;
+  double value;
+};
+
 
 void read_input(const char* name, int index) // name of file & index in alphabet
 {
@@ -53,6 +59,7 @@ void read_input(const char* name, int index) // name of file & index in alphabet
   infile.close();
 }
 
+
 bool valid_file(const char* name)
 {
   ifstream infile(name);
@@ -60,6 +67,7 @@ bool valid_file(const char* name)
   if (infile) return true;
   else return false;
 }
+
 
 void test_alphabet()
 {
@@ -76,6 +84,17 @@ void test_alphabet()
     cout << "\n\n";
   }
 }
+
+
+void clear_memory(int count)
+{
+  for (int i=0;i<count;i++)
+    delete[] alphabet[i];
+  
+  delete[] alphabet;
+}
+
+
 int main()
 {
   string filename;
@@ -104,6 +123,14 @@ int main()
     read_input(filename.c_str(),(i-97));
   }
   
-  test_alphabet();
+  //   test_alphabet();
+  
+  
+  
+  
+  
+  
+  
+  clear_memory(valid_count);
   return 0;
 }

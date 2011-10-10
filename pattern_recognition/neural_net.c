@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <ctime>
+#include <cmath>
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -18,6 +19,7 @@ struct perceptron_layer
 {
   double weight;
   double value;
+  double error;
 };
 
 
@@ -32,7 +34,7 @@ void read_input(const char* name, int index) // name of file & index in alphabet
 
   if (infile.is_open())
   {
-    char code[2];
+    char code[3];
     int height;
     int width;
     int pixel1,pixel2,pixel3;
@@ -101,31 +103,52 @@ void clear_memory(int count)
 }
 
 
+double delta_func(double y)
+{
+  return 1.0f/(1.0f+exp(-y));
+}
+
 void backpropagation(int input_size,int hidden_size, int output_size, double learning_rate)
 {
   perceptron_layer* input = new perceptron_layer[input_size];
   perceptron_layer* hidden = new perceptron_layer[hidden_size];
   perceptron_layer* output = new perceptron_layer[output_size];
 
-  // initialize weights
+  double *hidden_weights = new double[input_size];
+  double *output_weights = new double[hidden_size];
+
+  // initialize weights b/w -0.05 to +0.05
   for (int i=0; i<input_size; i++)
   {
     input[i].value = 0.0;
-    input[i].weight = 1.0;//((double)rand())/((double)RAND_MAX) -1.0f;
+    input[i].weight = 0.10f*((double)rand())/((double)RAND_MAX) - 0.05f;
+    input[i].error = 0.0;
 
+    hidden_weights[i] = 0.10f*((double)rand())/((double)RAND_MAX) - 0.05f;
     if (i<hidden_size)
     {
       hidden[i].value = 0.0;
-      hidden[i].weight = ((double)rand())/((double)RAND_MAX) - 1.0f;
+      hidden[i].weight = 0.10f*((double)rand())/((double)RAND_MAX) - 0.05f;
+      hidden[i].error = 0.0;
+
+      output_weights[i] = 0.10f*((double)rand())/((double)RAND_MAX) - 0.05f;
     }
 
     if (i<output_size)
     {
       output[i].value = 0.0;
-      output[i].weight = ((double)rand())/((double)RAND_MAX) - 1.0f;
+      output[i].weight = 0.10f*((double)rand())/((double)RAND_MAX) - 0.05f;
+      output[i].error = 0.0;
     }
   }
 
+  cout << "hidden weights\n";
+  for (int k=0; k<input_size; k++)
+    cout << hidden_weights[k] << endl;
+
+  cout << "output weights\n";
+  for (int k=0; k<hidden_size; k++)
+    cout << output_weights[k] << endl;
 
   for (int k=0; k<alphabet_count; k++)
   {
@@ -138,7 +161,7 @@ void backpropagation(int input_size,int hidden_size, int output_size, double lea
     {
       for (int i=0;i<input_size; i++)
       {
-	hidden[j].value += hidden[j].weight * input[i].value;
+	hidden[j].value = delta_func(hidden[j].value + (hidden_weights[i] * input[i].value));
       }
     }
 
@@ -147,7 +170,7 @@ void backpropagation(int input_size,int hidden_size, int output_size, double lea
     {
       for (int i=0;i<hidden_size; i++)
       {
-	output[j].value += output[j].weight * hidden[i].value;
+	output[j].value = delta_func( output[j].value + (output_weights[i] * hidden[i].value));
       }
     }
   }
@@ -193,9 +216,9 @@ int main()
     read_input(filename.c_str(),(i-97));
   }
 
-  //   test_alphabet();
+//     test_alphabet(alphabet_count);
 
-//   backpropagation(image_size,alphabet_count,alphabet_count,0.5);
+  backpropagation(image_size,alphabet_count,alphabet_count,0.5);
 
 
 

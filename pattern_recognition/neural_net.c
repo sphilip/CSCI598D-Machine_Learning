@@ -146,10 +146,6 @@ void backpropagation(int input_size,int hidden_size, int output_size, double lea
   for (int k=0; k<input_size; k++)
     cout << hidden_weights[k] << endl;
 
-  cout << "output weights\n";
-  for (int k=0; k<hidden_size; k++)
-    cout << output_weights[k] << endl;
-
   for (int k=0; k<alphabet_count; k++)
   {
     // initialize inputs
@@ -159,20 +155,35 @@ void backpropagation(int input_size,int hidden_size, int output_size, double lea
     // train with alphabet
     for (int j=0; j<hidden_size; j++)
     {
+      double net=0;
       for (int i=0;i<input_size; i++)
       {
-	hidden[j].value = delta_func(hidden[j].value + (hidden_weights[i] * input[i].value));
+	net += hidden_weights[i] * input[i].value;
       }
+      hidden[j].value = delta_func(net);
     }
+
+
+    // current hidden nodes
+    cout << "\ncurrent hidden nodes:\n";
+    for (int j=0; j<input_size; j++)
+      cout << hidden[j].value << endl;
 
     // calculate output and backpropagate errors
     for (int j=0; j<output_size; j++)
     {
+      double net=0;
       for (int i=0;i<hidden_size; i++)
       {
-	output[j].value = delta_func( output[j].value + (output_weights[i] * hidden[i].value));
+	net += output_weights[i] * hidden[i].value;
       }
+      output[j].value = delta_func(net);
     }
+
+    // current outputnodes
+    cout << "\ncurrent output nodes:\n";
+    for (int j=0; j<hidden_size; j++)
+      cout << output[j].value << endl;
   }
 
   for (int z=0;z<output_size; z++)

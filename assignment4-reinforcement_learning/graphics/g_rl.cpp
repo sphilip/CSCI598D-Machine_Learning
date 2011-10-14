@@ -201,7 +201,7 @@ void drawPole()
   glVertex2d(0.75 + p->convert_angle(x_angle), 40.0 + p->convert_angle(y_angle));
   glVertex2d(-0.75 + p->convert_angle(x_angle), 40.0 + p->convert_angle(y_angle));
 
-  glRotated(90-p->convert_angle(),0.0,0.0,-1.0);
+  glRotated(90-p->convert_angle(p->angle),0.0,0.0,-1.0);
 //   cout << p->convert_angle() << endl;
   glEnd();
 }
@@ -222,8 +222,11 @@ void draw()
 
 void update_pole(int val)
 {
-  p->nudge();
-  drawPole();
+  for (int i=0; i<val; i++)
+  {
+    p->nudge();
+    drawPole();
+  }
 }
 
 void handleKey(unsigned char key, int x, int y)
@@ -247,7 +250,7 @@ void handleSpecialKey(int key, int x, int y)
       p->a.x = cos(p->angle)*-10.0;
       p->a.y = sin(p->angle)*-10.0;
       //       glutTimerFunc(1000,update_pole,0);
-      p->nudge();
+//       p->nudge();
       break;
 
     case GLUT_KEY_RIGHT:
@@ -262,7 +265,10 @@ void handleSpecialKey(int key, int x, int y)
       break;
   }
 
-  drawPole();
+double maxPossible_dt = 0.1f;
+  int numOfIterations = (int)((p->t - p->t0) / maxPossible_dt) + 1;
+
+  update_pole(numOfIterations);
 }
 
 int main(int argc, char *argv[])

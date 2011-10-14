@@ -6,7 +6,7 @@ pole::pole()
   v = Vector(0.0,0.0); // velocity
   v0 = Vector (0.0,0.0); // initial velocity
   a = Vector(0.0, 0.0); // acceleration
-  f = Vector(0.0,0.0); // force
+//   f = Vector(0.0,0.0); // force
   w = 0.0; // angular velocity
 
   mass = 5.0;
@@ -48,7 +48,7 @@ void pole::fall()
 //   v = v0 + a*difftime(t,t0);
 }
 
-double pole::convert_angle()
+double pole::convert_angle(double& a)
 {
-  return angle/M_PI;
+  return a/M_PI;
 }

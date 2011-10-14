@@ -36,7 +36,7 @@ class pole
     pole();
     void nudge();
     void fall();
-    double convert_angle();
+    double convert_angle(double& a);
 };
 
 #endif

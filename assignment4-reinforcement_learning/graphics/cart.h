@@ -17,6 +17,9 @@ class cart
     Vector pole_location;
     Vector cart_dim;
 
+    Vector pivot; // location of the pin in the pole
+    double pivot_radius; // radius of the pin
+
     cart();
     void nudge();
     void balance(pole &p);

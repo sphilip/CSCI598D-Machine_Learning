@@ -4,7 +4,7 @@ PROG = pole_balancing
 
 SRCS = g_rl.cpp pole.c Vector.c cart.c
 HDRS = pole.h Vector.h cart.h
-LIBS = -lglut -lGL -lGLU
+LIBS = -lglut -lGL -lGLU -ggdb
 
 all: $(PROG)
 

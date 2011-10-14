@@ -1,4 +1,5 @@
 #include "pole.h"
+#include <cmath>
 
 pole::pole()
 {
@@ -6,42 +7,48 @@ pole::pole()
   v0 = Vector (0.0,0.0); // initial velocity
   a = Vector(0.0, 0.0); // acceleration
   f = Vector(0.0,0.0); // force
-  w = Vector(0.0,0.0); // angular velocity
+  w = 0.0; // angular velocity
 
   mass = 5.0;
   height = 32.0; // height
   width = 1.50; // width
-  
-  pivot = Vector(0.0,9.0);
-  pivot_radius = 0.25;
+
+//   pivot = Vector(0.0,9.0);
+//   pivot_radius = 0.25;
   angle = 0.0;
+  prev_angle = 0.0;
 }
 
-void pole::nudge(Vector acceleration, double t)
+void pole::nudge()
 {
-  double delta_t = t - prev_time;
-  f = acceleration*mass;
+  double delta_t = t-t0;
+//   f = tangential_a*mass;
   v =  v0 + (a*delta_t);
-
   /*
-      (r x v)
-  w = -------
-      |r|*|r|
-      
+      (r x v)   |v|sin(theta)
+  w = ------- =  -------------
+      |r|*|r|         |r|
+
   */
-  Vector r = Vector(0.0,height); 
-  w = cross(r,v);
-  w = w * (1/(r.magnitude()*r.magnitude()));
-  
-  
-  
+//   Vector r = Vector(0.0,height);
+  //   w = cross(r,v);
+  //   w = w * (1/(r.magnitude()*r.magnitude()));
+  w = v.magnitude()*sin(angle)/height;
+
+//   angle = prev_angle + w*delta_t + (0.5*a.magnitude()*delta_t*delta_t)/height;
+angle = w*delta_t;
   // set previous to current
   v0 = v;
-  prev_time=t;
+  t0=t;
 }
 
-void pole::fall(double t)
+void pole::fall()
 {
   a = Vector(0,-9.8);
-  v = v0 + a*(t - prev_time);
+//   v = v0 + a*difftime(t,t0);
+}
+
+double pole::convert_angle()
+{
+  return angle/M_PI;
 }

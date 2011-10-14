@@ -3,6 +3,7 @@
 
 // #include "cart.h"
 #include "Vector.h"
+#include <ctime>
 
 class pole
 {
@@ -10,30 +11,32 @@ class pole
     double width;
     double height; // height
     double mass;
-    
-    Vector f; // force
+
+//     Vector f; // force
     Vector v; // velocity
     Vector v0; // initial velocity
     Vector a; // acceleration
-    Vector w; // angular velocity
-    
-    Vector pivot; // location of the pin in the pole
-    double pivot_radius; // radius of the pin
-    
-    double prev_time;
-    
-    
+    double w; // angular velocity in y-dir
+
+//     Vector pivot; // location of the pin in the pole
+//     double pivot_radius; // radius of the pin
+
+    double t0; // initial time
+    double t; // = current time;
+
+
     //             0 deg
     //               ||
     // -90 deg <==   || ==> 90 deg
     //             -------
     //             |     |
-    
+
     double angle;
-    
+    double prev_angle;
     pole();
-    void nudge(Vector f, double t);
-    void fall(double t);
+    void nudge();
+    void fall();
+    double convert_angle();
 };
 
 #endif

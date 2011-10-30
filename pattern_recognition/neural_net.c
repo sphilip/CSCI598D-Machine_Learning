@@ -10,12 +10,16 @@
 using namespace std;
 
 #define RANDOM_LETTER (int) (25.0f*(double)rand()/(double)RAND_MAX)
+#define RANDOM_WEIGHT 0.10f*((double)rand())/((double)RAND_MAX) - 0.05f
 
 // global variables
 int **alphabet;
 int image_size;
 int alphabet_count;
-int *test_letter;
+// int *test_letter;
+
+int *backpropagation_input;
+int **target_output;
 
 double **input_to_hidden_weight;
 double **hidden_to_output_weight;
@@ -27,6 +31,9 @@ double *output_value;
 double *hidden_error;
 double *output_error;
 
+int input_size;
+int hidden_size;
+int output_size;
 
 // name of file & index in alphabet
 void read_input(const char* name, int index)
@@ -128,11 +135,14 @@ void count_files()
     read_input(filename.c_str(),(i-97));
   }
 
+  input_size = image_size;
+  hidden_size = alphabet_count;
+  output_size = alphabet_count;
 }
 
-void clear_memory(int count, int input_size, int hidden_size, int output_size)
+void clear_memory()
 {
-  for (int i=0;i<count;i++)
+  for (int i=0;i<alphabet_count;i++)
     delete[] alphabet[i];
 
   delete[] alphabet;
@@ -154,6 +164,13 @@ void clear_memory(int count, int input_size, int hidden_size, int output_size)
 
   delete[] hidden_error;
   delete[] output_error;
+
+  delete[] backpropagation_input;
+
+  for (int i=0; i<alphabet_count; i++)
+    delete[] target_output[i];
+
+  delete[] target_output;
 }
 
 
@@ -163,7 +180,7 @@ double sigma_func(double y)
 }
 
 
-void init_network(int input_size,int hidden_size, int output_size)
+void init_network()
 {
   input_to_hidden_weight = new double*[input_size];
   hidden_to_output_weight = new double*[hidden_size];
@@ -173,7 +190,7 @@ void init_network(int input_size,int hidden_size, int output_size)
     input_to_hidden_weight[i] = new double[hidden_size];
     for (int j=0; j<hidden_size; j++)
     {
-      input_to_hidden_weight[i][j] = ((double)rand())/((double)RAND_MAX) - 0.5f;
+      input_to_hidden_weight[i][j] = RANDOM_WEIGHT;
     }
   }
 
@@ -181,9 +198,10 @@ void init_network(int input_size,int hidden_size, int output_size)
   {
     hidden_to_output_weight[i] = new double[output_size];
     for (int j=0; j<output_size; j++)
-      hidden_to_output_weight[i][j] = ((double)rand())/((double)RAND_MAX) - 0.5f;
+      hidden_to_output_weight[i][j] = RANDOM_WEIGHT;
   }
 
+  backpropagation_input = new int[input_size];
   input_value = new double[input_size];
   hidden_value = new double[hidden_size];
   output_value = new double[output_size];
@@ -209,17 +227,75 @@ void init_network(int input_size,int hidden_size, int output_size)
     }
   }
 
+  // determine the target values per letter
+  target_output = new int*[alphabet_count];
+  for (int i=0; i<alphabet_count; i++)
+    target_output[i] = new int[alphabet_count];
+
+  for (int i=0; i<alphabet_count; i++)
+  {
+    for (int j=0; j<alphabet_count; j++)
+    {
+      if (i == j)
+	target_output[i][j] = 1;
+      else target_output[i][j] = 0;
+    }
+  }
+
+//   test_letter = new int[image_size];
+}
+
+double calculate_mse(int letter)
+{
+  double mse=0.0f;
+  for (int j=0; j<output_size; j++)
+  {
+    double error = (target_output[letter][j]-output_value[j])*(target_output[letter][j]-output_value[j]);
+    mse += error;
+  }
+
+  mse = mse/output_size;
+  cout << mse << endl;
+  return mse;
+}
+
+void weight_update(double learning_rate)
+{
+  // update weights
+  for (int j=0;j<input_size; j++)
+  {
+    for (int i=0; i<hidden_size; i++)
+      input_to_hidden_weight[j][i] = input_to_hidden_weight[j][i] + learning_rate*hidden_error[i]*input_value[j];
+  }
+
+  for(int j=0; j<hidden_size; j++)
+  {
+    for (int i=0; i<output_size; i++)
+      hidden_to_output_weight[j][i] = hidden_to_output_weight[j][i] + learning_rate*output_error[i]*hidden_value[j];
+  }
 
 }
 
-
-double backpropagation(int input_size,int hidden_size, int output_size, double learning_rate, int letter)
+void backpropagate_errors(int letter)
 {
-  // initialize inputs
-  for (int j=0; j<input_size; j++)
-    input_value[j] = alphabet[letter][j];
+  // backpropagate errors @ output
+  for (int j=0; j<output_size; j++)
+    output_error[j] = output_value[j]*(1.0f-output_value[j])*(target_output[letter][j]-output_value[j]);
 
-  // train with alphabet
+  // backpropagate error @ hidden
+  for (int j=0; j<hidden_size; j++)
+  {
+    double sum=0.0f;
+    for (int i=0; i<output_size; i++)
+      sum += hidden_to_output_weight[j][i]*output_error[i];
+
+    hidden_error[j] = hidden_value[j]*(1.0f-hidden_value[j])*sum;
+  }
+}
+
+
+void apply_network()
+{
   for (int j=0; j<hidden_size; j++)
   {
     //     double net=0.0f;
@@ -244,69 +320,85 @@ double backpropagation(int input_size,int hidden_size, int output_size, double l
     output_value[j] = sigma_func(net);
   }
 
-  // backpropagate errors @ output
-  double target;
-  for (int j=0; j<output_size; j++)
-  {
-    if (j==letter)
-      target = 1.0f;
-    else target = -1.0f;
-
-    output_error[j] = output_value[j]*(1.0f-output_value[j])*(target-output_value[j]);
-  }
-
-  // backpropagate error @ hidden
-  for (int j=0; j<hidden_size; j++)
-  {
-    double sum=0.0f;
-    for (int i=0; i<output_size; i++)
-      sum += hidden_to_output_weight[i][j]*output_error[i];
-
-    hidden_error[j] = hidden_value[j]*(1.0f-hidden_value[j])*sum;
-  }
-
-  // update weights
-  for (int j=0;j<input_size; j++)
-  {
-    for (int i=0; i<hidden_size; i++)
-      input_to_hidden_weight[j][i] = input_to_hidden_weight[j][i] + learning_rate*hidden_error[i]*input_value[j];
-  }
-
-  for(int j=0; j<hidden_size; j++)
-  {
-    for (int i=0; i<output_size; i++)
-      hidden_to_output_weight[j][i] = hidden_to_output_weight[j][i] + learning_rate*output_error[i]*hidden_value[j];
-  }
-
-  double mse;
-  for (int j=0; j<output_size; j++)
-    mse += (output_error[j]*output_error[j]);
-
-  mse = mse/output_size;
-
-  //  output results
-  //   for (int z=0;z<output_size; z++)
-  //     cout << (char)(z + 97) << "\t" << output_value[z] << endl;
-
-  return mse;
+/*   // backpropagate errors @ output
+//   double target;
+//   for (int j=0; j<output_size; j++)
+//   {
+//     if (j==letter)
+//       target = 1.0f;
+//     else target = -1.0f;
+//
+//     output_error[j] = output_value[j]*(1.0f-output_value[j])*(target-output_value[j]);
+//   }
+//
+//   // backpropagate error @ hidden
+//   for (int j=0; j<hidden_size; j++)
+//   {
+//     double sum=0.0f;
+//     for (int i=0; i<output_size; i++)
+//       sum += hidden_to_output_weight[i][j]*output_error[i];
+//
+//     hidden_error[j] = hidden_value[j]*(1.0f-hidden_value[j])*sum;
+//   }
+//
+//   // update weights
+//   for (int j=0;j<input_size; j++)
+//   {
+//     for (int i=0; i<hidden_size; i++)
+//       input_to_hidden_weight[j][i] = input_to_hidden_weight[j][i] + learning_rate*hidden_error[i]*input_value[j];
+//   }
+//
+//   for(int j=0; j<hidden_size; j++)
+//   {
+//     for (int i=0; i<output_size; i++)
+//       hidden_to_output_weight[j][i] = hidden_to_output_weight[j][i] + learning_rate*output_error[i]*hidden_value[j];
+//   }
+//
+//   double mse;
+//   for (int j=0; j<output_size; j++)
+//     mse += (output_error[j]*output_error[j]);
+//
+//   mse = mse/output_size;
+//
+//   //  output results
+//   //   for (int z=0;z<output_size; z++)
+//   //     cout << (char)(z + 97) << "\t" << output_value[z] << endl;
+//
+//   return mse;
+*/
 }
 
 void create_character(int letter, double noise)
 {
-  test_letter = new int[image_size];
-  test_letter = alphabet[letter];
+  for (int i=0; i<image_size; i++)
+    backpropagation_input[i] = alphabet[letter][i];
+  // test_letter = alphabet[letter];
+
+  //   backpropagation_input = alphabet[letter];
 
   for (int i=0; i<image_size; i++)
   {
     if (rand() < noise * RAND_MAX)
-      test_letter[i] = (test_letter[i]) ? 0 : 1;
+    {
+      if (backpropagation_input[i])
+	backpropagation_input[i] = 0;
+
+      else backpropagation_input[i] =  1;
+    }
   }
 }
 
+void print_output()
+{
+  for (int i=0; i<output_size; i++)
+    cout << (char) (i+97) << "\t" << output_value[i] << endl;
+}
 void classify_input(int size, int index, double noise)
 {
   double max = -999.0f;
   int max_id = -1;
+
+  print_output();
 
   for (int i=0; i<size; i++)
   {
@@ -326,18 +418,31 @@ int main()
 
   count_files();
 
-  //     test_alphabet(alphabet_count);
   double error=0;
 
-  init_network(image_size,alphabet_count,alphabet_count);
+
+  init_network();
+
   do
   {
-    error = backpropagation(image_size,alphabet_count,alphabet_count,0.5, RANDOM_LETTER);
+    int chosen_letter = RANDOM_LETTER;
+
+    // initialize inputs
+    for (int j=0; j<image_size; j++)
+      backpropagation_input[j] = alphabet[chosen_letter][j];
+
+    apply_network();
+
+    backpropagate_errors(chosen_letter);
+    weight_update(chosen_letter);
+
+    error = calculate_mse(chosen_letter);
+
   } while (error > 0.001);
 
 
   /* Start with 5% noise probability, end with 25% (per pixel) */
-  double noise_prob = 0.05;
+  double noise_prob = 0.05f;
 
   int rand_letter = RANDOM_LETTER;
   cout << "Original letter is " <<  (char) (rand_letter+97) << endl;
@@ -345,12 +450,18 @@ int main()
   for (int i=0; i<5 ; i++)
   {
     create_character(rand_letter, noise_prob);
-//     backpropagation(image_size,alphabet_count,alphabet_count,0.5, rand_letter);
+
+//     //initialize inputs
+//     for (int j=0; j<image_size; j++)
+//       backpropagation_input[j] = alphabet[rand_letter][j];
+
+    apply_network();
     classify_input(alphabet_count, rand_letter, noise_prob);
 
     noise_prob += 0.05;
+
   }
 
-  clear_memory(alphabet_count,image_size,alphabet_count,alphabet_count);
+  clear_memory();
   return 0;
 }

@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "rngs.h"
+#include <ctime>
 
 #define MAXEDGE  50
 #define MAXNODE  50
@@ -45,234 +46,14 @@ long   edges;
 bool euclid;
 double* euclid_dist;
 loc* rect_dist;
-// double* paths;
-int* used_nodes;
 path_time* path_t;
-
-
+int total_paths;
 /* =========================== */
   double Uniform(double a, double b)          /* use a < b */
 /* =========================== */
 {
   return (a + (b - a) * Random());
 }
-/*
-// ========================== //
-  void GetActivityDurations()
-// ========================== //
-{
-  long i;
-
-  for (i = 1; i <= edges; i++)
-    p[i] = Uniform(0.0, UpperLimit[i]);
-
-  return;
-}
-
-// ================ //
-  void PrintPaths()
-// ================ //
-{
-  long i;
-  long j;
-
-  printf("\n");
-  for (i = 1; i <= paths; i++) {
-    printf("Path %ld: ", i);
-    j = 1;
-    while(Paths[i][j] != 0) {
-      j++;
-    }
-    j--;
-    while(j > 0) {
-      printf("-%ld-", Paths[i][j]);
-      j--;
-    }
-    printf("\n");
-  }
-
-  return;
-}
-
-// =============================== //
-  double TimeToComplete(long node)
-// =============================== //
-{
-  long   k;
-  long   l = 0;
-  double tmax   = 0.0;
-  double t  = 0.0;
-
-  k = 1;
-  while (l < M[node][0]) {
-    if (M[node][k] == -1) {
-      t = TimeToComplete(M[0][k]) + p[k];
-      if (t >= tmax)
-	tmax = t;
-      l++;
-    }
-    k++;
-  }
-  return(tmax);
-}
-
-// ============================================= //
-  long GetPaths(long node, long step, long path)
-// ============================================= //
-{
-  long i = 1;
-  long j;
-  long found    = 0;
-  long numpaths = 0;
-  long total    = 0;
-
-  while(found < M[node][0]) {
-    if(M[node][i] == -1) {
-      numpaths = GetPaths(M[0][i], step + 1, path + total);
-      for (j = 0; j < numpaths; j++) {
-	Paths[path + j + total][step] = i;
-      }
-      total += numpaths;
-      found++;
-    }
-    i++;
-  }
-
-  if(total == 0) {
-    Paths[path][step] = 0;
-    total = 1;
-  }
-
-  return(total);
-}
-
-// ============================================= //
-  void EstimatePathProb()
-// ============================================= //
-{
-  long   i;
-  long   j;
-  long   k;
-  long   maxpath;
-  long   PathProb[MAXPATHS] = {0};
-  double pathtime           = 0.0;
-  double maxtime            = 0.0;
-
-  for (i = 0; i < N; i++) {
-    GetActivityDurations();
-
-    for (j = 1; j <= paths; j++) {
-      k = 1;
-      while(Paths[j][k] != 0) {
-	pathtime += p[Paths[j][k]];
-	k++;
-      }
-      if(pathtime > maxtime) {
-	maxtime = pathtime;
-	maxpath = j;
-      }
-      pathtime = 0.0;
-    }
-    PathProb[maxpath]++;
-
-    maxpath = 0;
-    maxtime = 0.0;
-  }
-
-  printf("\nCritical path probabilities:\n");
-  for (i = 1; i <= paths; i++)
-    printf(" -  %2ld  - ", i);
-  printf("\n");
-  for (i = 1; i <= paths; i++)
-    printf(" %1.6f ", (double) PathProb[i]/N);
-  printf("\n");
-
-  return;
-}
-
-// =================== //
-  void DefineNetwork()
-// =================== //
-{
-  long j;
-  long k;
-
-//   edges = 5;
-//   nodes = 4;
-
-  for (j = 0; j <= nodes; j++) {
-    for (k = 0; k <= edges; k++) {
-      M[j][k] = 0;
-    }
-  }
-
-  M[1][1] = 1;
-  M[1][2] = 1;
-
-  M[2][1] = -1;
-  M[2][3] = 1;
-  M[2][4] = 1;
-
-  M[3][2] = -1;
-  M[3][3] = -1;
-  M[3][5] = 1;
-
-  M[4][4] =-1;
-  M[4][5] = -1;
-
-
-
-  for (j = 1; j <= nodes; j++) {
-    for (k = 1; k <= edges; k++) {
-      if(M[j][k] == -1) {
-	M[j][0]++;
-      }
-      else if(M[j][k] == 1) {
-	M[0][k] = j;
-      }
-    }
-  }
-
-  UpperLimit[1] = 1.0;
-  UpperLimit[2] = 1.0;
-  UpperLimit[3] = 1.0;
-  UpperLimit[4] = 1.0;
-  UpperLimit[5] = 1.0;
-
-  paths = GetPaths(nodes, 1, 1);
-
-  printf("Network read in:\n");
-  printf("%ld edges.\n", edges);
-  printf("%ld nodes.\n", nodes);
-  printf("%ld paths.\n", paths);
-
-  return;
-}
-
-// ============================ //
-  void EstimateCompletionTime()
-// ============================ //
-{
-  long   node;
-  long   i;
-  double time;
-  double sumtime = 0.0;
-
-  node = nodes;
-
-  for (i = 0; i < N; i++) {
-    GetActivityDurations();
-    time = TimeToComplete(node);
-    sumtime += time;
-  }
-
-  printf("\nFor %ld replications,", N);
-  printf("\nthe estimated average time to complete the network is:\n");
-  printf("%11.5f\n", sumtime / (double) N);
-
-  return;
-}
-*/
 
 double euclideanDistance(int a, int b)
 {
@@ -313,22 +94,39 @@ int getInput()
   return 0;
 }
 
+void getPathCount()
+{
+  int path_count=1;
+
+  if (num_nodes == 1)
+    path_count = 0;
+  
+  else
+  {
+    for (int temp_node=2; temp_node<num_nodes; temp_node++)
+    {
+      path_count *= temp_node;
+    }
+  }
+  
+  total_paths = path_count;
+  printf("Total number of paths: %d\n\n",path_count);
+}
+
 void getEdgeCount()
 {
   long temp_edge = 0;
-//   int i=0; // overcounting in for loop; i compensates for that
-
   for (long temp_node = 2; temp_node <= num_nodes; temp_node++)
   {
     temp_edge += temp_node-1;
-//     i++;
   }
 
-  edges = temp_edge;// - i;
+  edges = temp_edge;
 }
 
 void placeCities()
 {
+  printf("Locations:\n");
   for (int i=0; i<num_nodes; i++)
   {
     loc_nodes[i].x = Uniform(0.0f,1.0f);
@@ -364,13 +162,16 @@ void placeCities()
   printf("\n");
 }
 
-bool notAlreadyTaken(int path_num, int c)
+bool alreadyTaken(int path_num, int c)
 {
-  bool result=true;
+//   bool result=true;
   for (int i=0; i<num_nodes; i++)
   {
     if (path_t[path_num].path[i] == c)
       return true;
+    
+    else if (path_t[path_num].path[i] == -1)
+      return false;
   }
 
 //   for (int i=0; i<num_nodes; i++)
@@ -382,54 +183,89 @@ bool notAlreadyTaken(int path_num, int c)
   return false;
 }
 
+void printPaths(int total)
+{
+  for (int i=0; i<total; i++)
+  {
+    printf("Path %d : ", i);
+    for (int j=0; j<num_nodes; j++)
+      printf("%d ", path_t[i].path[j]);
+    printf("\n");
+  }
+  printf("\n");
+}
+
+void printTables()
+{
+  printf("Distance matrix\n");
+  for (int i=0; i<num_nodes; i++)
+  {
+    for (int j=0; j<num_nodes; j++)
+    {
+      printf("%3.4f\t",euclideanDistance(i,j));
+    }
+    printf("\n");
+  }
+}
+
 void travel()
 {
-  int current_path = 0;
-  int total_paths = (int)Uniform(1.0f,edges);
+//   int current_path = 0;
+  //   int total_paths = (int)Uniform(1.0f,edges);
   path_t = new path_time[total_paths];
 
-  for (current_path; current_path < total_paths; current_path++)
+  for (int current_path=0; current_path < total_paths; current_path++)
   {
+    path_t[current_path].time = 0.0f;
     path_t[current_path].path = new int[num_nodes+1];
-
-    for (int i=0 ; i<num_nodes+1; i++)
-      path_t[current_path].path[i] = -1;
+    
+    for (int x=0 ; x<num_nodes+1; x++)
+      path_t[current_path].path[x] = -1;
 
     path_t[current_path].path[0] = 0;
 
     for (int i=1; i<num_nodes; i++)
     {
-      int choice;
+      double choice;
       int j=0;
 
       do
       {
-	PutSeed(-1);
-	choice = (int)Uniform(1.0f,num_nodes);
-	j++;
-      } while (notAlreadyTaken(current_path, choice) && (j <= num_nodes));
+        // 	PutSeed(time(NULL));
+        // 	choice = Uniform(1.0f,(double)num_nodes);
 
-      if (j != num_nodes)
+        choice = rand()%(num_nodes-1) + 1.0f;
+        if (!alreadyTaken(current_path, choice))
+          break;
+
+        else j++;
+      } while (j <= num_nodes);
+
+     
+      if (j < num_nodes)
 	path_t[current_path].path[i] = choice;
 
-      else
-      {
-	path_t[current_path].path[i] = 0;
-	break;
-      }
+//       else
+//       {
+// 	path_t[current_path].path[i] = 0;
+// 	break;
+//       }
     }
 
     int k=1;
 
-    while(path_t[current_path].path[k] != -1 || k < num_nodes)
+    
+    while(path_t[current_path].path[k] != -1 && k < num_nodes)
     {
       if (euclid)
-	path_t[current_path].time += euclideanDistance(k-1,k);
+	path_t[current_path].time += euclideanDistance(path_t[current_path].path[k-1],path_t[current_path].path[k]);
 
       k++;
     }
   }
-
+  
+  printPaths(total_paths);
+  
   double min_time = 90.0f;
   int index;
 
@@ -450,19 +286,24 @@ void travel()
     if (path_t[index].path[x] != -1)
       printf("%d ", path_t[index].path[x]);
 
-    print("\n");
+    printf("\n");
 }
+
 
 int main()
 {
+  srand(time(NULL));
   euclid = false;
 
   if(getInput() != 0)
     return -1;
 
+  getPathCount();
   getEdgeCount();
   placeCities();
   travel();
+  
+  printTables();
   return 0;
 
   /*DefineNetwork();

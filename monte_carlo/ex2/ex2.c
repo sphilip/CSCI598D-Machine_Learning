@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include "rngs.h"
+#include "../ex1/rngs.h"
 
 using namespace std;
 
@@ -43,10 +43,9 @@ int main()
   int w;
 
   for (w=0; w < seed; w++) {
-    k = Uniform(-500.0f,2000.0f);
+    k = Uniform(0.0f,2000.0f);
     a = Uniform(-2000.0f,2000.0f);
     PutSeed(-1);
-    if (a<0) cout << "a= " << a << endl;
     do
     {
       y = 1.0f-(exp(-k*t)*cos(a*t));

@@ -60,13 +60,14 @@ double euclideanDistance(int a, int b)
   return sqrt(pow((loc_nodes[a].x-loc_nodes[b].x),2)+pow((loc_nodes[a].y-loc_nodes[b].y),2));
 }
 
-loc rectilinearDistance(int a, int b)
+double rectilinearDistance(int a, int b)
 {
-  loc result;
-  result.x = loc_nodes[b].x - loc_nodes[a].x;
-  result.y = loc_nodes[b].y - loc_nodes[a].y;
+  double x(0),y(0);
+  
+  x = loc_nodes[b].x - loc_nodes[a].x;
+  y = loc_nodes[b].y - loc_nodes[a].y;
 
-  return result;
+  return (x+y);
 }
 
 int getInput()
@@ -195,14 +196,18 @@ void printPaths(int total)
   printf("\n");
 }
 
-void printTables()
+void printDistances()
 {
   printf("Distance matrix\n");
   for (int i=0; i<num_nodes; i++)
   {
     for (int j=0; j<num_nodes; j++)
     {
-      printf("%3.4f\t",euclideanDistance(i,j));
+      if (euclid)
+        printf("%3.4f\t",euclideanDistance(i,j));
+      
+      else printf("%3.4f\t",rectilinearDistance(i,j));
+        
     }
     printf("\n");
   }
@@ -259,6 +264,9 @@ void travel()
     {
       if (euclid)
 	path_t[current_path].time += euclideanDistance(path_t[current_path].path[k-1],path_t[current_path].path[k]);
+      
+      else
+        path_t[current_path].time += rectilinearDistance(path_t[current_path].path[k-1],path_t[current_path].path[k]);
 
       k++;
     }
@@ -286,7 +294,7 @@ void travel()
     if (path_t[index].path[x] != -1)
       printf("%d ", path_t[index].path[x]);
 
-    printf("\n");
+    printf("\n\n");
 }
 
 
@@ -303,7 +311,7 @@ int main()
   placeCities();
   travel();
   
-  printTables();
+  printDistances();
   return 0;
 
   /*DefineNetwork();
